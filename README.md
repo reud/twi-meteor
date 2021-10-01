@@ -8,11 +8,11 @@ docker build -t twi-meteor .
 # run
 
 ```sh
-docker run -d twi-meteor --env-file .env
+docker run -d  --env-file .env twi-meteor
 ```
 
 # check if it works
 
 ```sh
-docker exec <hash> tail -f /var/log/backup.log
+docker exec <hash> tail -f /var/log/app.log
 ```
