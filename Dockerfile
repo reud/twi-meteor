@@ -14,13 +14,9 @@ RUN CGO_ENABLED=0 go build -o /app main.go
 # switch to a second-stage production image
 FROM couchbase
 
-# setup cronjob
-COPY crontab.txt /crontab.txt
-RUN /usr/bin/crontab /crontab.txt
-
 # copy the executable from the first stage
 # into the production image
 COPY --from=build /app /app
 COPY .env .env
 
-CMD ["/usr/sbin/cron", "-f"]
+CMD ["/app"]
