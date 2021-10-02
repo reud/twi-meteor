@@ -1,1 +1,1 @@
-*/15 * * * * /app >> /var/log/app.log
+*/2 * * * * /app >> /var/log/app.log
