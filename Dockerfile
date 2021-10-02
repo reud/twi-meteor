@@ -23,4 +23,4 @@ RUN /usr/bin/crontab /crontab.txt
 COPY --from=build /app /app
 COPY .env .env
 
-CMD ["/usr/sbin/cron", "-f", "-l", "8"]
+CMD ["/usr/sbin/cron", "-f"]
