@@ -1,1 +1,1 @@
-0 */3 * * * /app >> /var/log/app.log
+MAILTO=mail@reud.net 0 */3 * * * /app >> /var/log/app.log

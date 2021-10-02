@@ -21,5 +21,6 @@ RUN /usr/bin/crontab /crontab.txt
 # copy the executable from the first stage
 # into the production image
 COPY --from=build /app /app
+COPY .env .env
 
 CMD ["/usr/sbin/cron", "-f", "-l", "8"]
