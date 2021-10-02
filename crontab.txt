@@ -1,1 +1,1 @@
-MAILTO=mail@reud.net 30 * * * * /app >> /var/log/app.log
+*/15 * * * * /app >> /var/log/app.log
