@@ -57,16 +57,14 @@ func main() {
 			}
 		}
 		if !found {
-			_, err := strconv.ParseInt(tweet.ID, 10, 64)
+			tweetID64 err := strconv.ParseInt(tweet.ID, 10, 64)
 			if err != nil {
 				log.Fatal(err)
 			}
-			/*
-				_, err = v1cleint.DestroyTweet(convertedStrInt64)
-				if err != nil {
-					log.Print(err)
-				}
-			*/
+			_, err = v1cleint.DestroyTweet(tweetID64)
+			if err != nil {
+				log.Print(err)
+			}
 		}
 	}
 }
