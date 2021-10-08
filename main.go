@@ -9,6 +9,7 @@ import (
 	v2 "github.com/reud/twi-meteor/infra/v2"
 	"log"
 	"strconv"
+	"time"
 )
 
 func main() {
@@ -42,6 +43,10 @@ func main() {
 		log.Fatal(err)
 	}
 	for _, tweet := range twts {
+		tweetTime, _ := time.Parse("2006-01-02T15:04:05.000Z", tweet.CreatedAt)
+		if !tweetTime.Before(time.Now().Add(-time.Hour * 24)) {
+			continue
+		}
 		likes := http.LikingUsers(tweet.ID, con.BearerToken)
 		found := false
 		for _, user := range likes {
@@ -52,15 +57,16 @@ func main() {
 			}
 		}
 		if !found {
-			convertedStrInt64, err := strconv.ParseInt(tweet.ID, 10, 64)
+			_, err := strconv.ParseInt(tweet.ID, 10, 64)
 			if err != nil {
 				log.Fatal(err)
 			}
-
-			_, err = v1cleint.DestroyTweet(convertedStrInt64)
-			if err != nil {
-				log.Print(err)
-			}
+			/*
+				_, err = v1cleint.DestroyTweet(convertedStrInt64)
+				if err != nil {
+					log.Print(err)
+				}
+			*/
 		}
 	}
 }

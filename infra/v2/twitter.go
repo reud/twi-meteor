@@ -103,6 +103,7 @@ func (v2 TwitterV2Client) FetchMyTweets(paginationToken string) ([]twitter.Tweet
 		fmt.Println(err)
 		return []twitter.TweetObj{}, "", err
 	default:
+		printUserTweets(userTweets)
 		return userTweets.Tweets, userTweets.Meta.NextToken, nil
 	}
 }
