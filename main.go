@@ -43,18 +43,23 @@ func main() {
 	}
 	for _, tweet := range twts {
 		likes := http.LikingUsers(tweet.ID, con.BearerToken)
+		found := false
 		for _, user := range likes {
 			if user.ID == strconv.FormatInt(id, 10) {
-				convertedStrInt64, err := strconv.ParseInt(tweet.ID, 10, 64)
-				if err != nil {
-					log.Fatal(err)
-				}
-				_, err = v1cleint.DestroyTweet(convertedStrInt64)
-				if err != nil {
-					log.Print(err)
-				}
-				log.Printf("deleted: %+v", tweet.ID)
+				log.Printf("saved: %+v", tweet.ID)
+				found = true
 				break
+			}
+		}
+		if !found {
+			convertedStrInt64, err := strconv.ParseInt(tweet.ID, 10, 64)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			_, err = v1cleint.DestroyTweet(convertedStrInt64)
+			if err != nil {
+				log.Print(err)
 			}
 		}
 	}
