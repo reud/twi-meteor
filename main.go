@@ -57,7 +57,7 @@ func main() {
 			}
 		}
 		if !found {
-			tweetID64 err := strconv.ParseInt(tweet.ID, 10, 64)
+			tweetID64, err := strconv.ParseInt(tweet.ID, 10, 64)
 			if err != nil {
 				log.Fatal(err)
 			}
