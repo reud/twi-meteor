@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/joho/godotenv"
+	"github.com/reud/twi-meteor/client"
 	"github.com/reud/twi-meteor/env"
+	"github.com/reud/twi-meteor/infra/http"
 	v1 "github.com/reud/twi-meteor/infra/v1"
 	v2 "github.com/reud/twi-meteor/infra/v2"
 	"log"
@@ -34,5 +36,26 @@ func main() {
 		TwitterID:   strconv.FormatInt(id, 10),
 	})
 
-	v2client.FetchMyTweets()
+	cl := client.GenClient(v1cleint, v2client)
+	twts, err := cl.FetchTweets()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, tweet := range twts {
+		likes := http.LikingUsers(tweet.ID, con.BearerToken)
+		for _, user := range likes {
+			if user.ID == strconv.FormatInt(id, 10) {
+				convertedStrInt64, err := strconv.ParseInt(tweet.ID, 10, 64)
+				if err != nil {
+					log.Fatal(err)
+				}
+				_, err = v1cleint.DestroyTweet(convertedStrInt64)
+				if err != nil {
+					log.Print(err)
+				}
+				log.Printf("deleted: %+v", tweet.ID)
+				break
+			}
+		}
+	}
 }

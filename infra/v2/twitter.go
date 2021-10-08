@@ -34,7 +34,35 @@ func (a authorize) Add(req *http.Request) {
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", a.Token))
 }
 
-func (v2 TwitterV2Client) FetchMyTweets() {
+func (v2 TwitterV2Client) TweetLookup(tweetID string) (*twitter.TweetLookup, error) {
+	tweet := &twitter.Tweet{
+		Authorizer: authorize{
+			Token: v2.BearerToken,
+		},
+		Client: http.DefaultClient,
+		Host:   "https://api.twitter.com",
+	}
+	fieldOpts := twitter.TweetFieldOptions{
+		Expansions:  []twitter.Expansion{twitter.ExpansionEntitiesMentionsUserName, twitter.ExpansionAuthorID},
+		TweetFields: []twitter.TweetField{twitter.TweetFieldCreatedAt, twitter.TweetFieldConversationID, twitter.TweetFieldAttachments},
+	}
+
+	lookups, err := tweet.Lookup(context.Background(), []string{tweetID}, fieldOpts)
+	var tweetErr *twitter.TweetErrorResponse
+	switch {
+	case errors.As(err, &tweetErr):
+		printTweetError(tweetErr)
+		return nil, tweetErr
+	case err != nil:
+		fmt.Println(err)
+		return nil, err
+	default:
+		x := lookups[tweetID]
+		return &x, nil
+	}
+}
+
+func (v2 TwitterV2Client) FetchMyTweets(paginationToken string) ([]twitter.TweetObj, string, error) {
 	user := &twitter.User{
 		Authorizer: authorize{
 			Token: v2.BearerToken,
@@ -58,10 +86,11 @@ func (v2 TwitterV2Client) FetchMyTweets() {
 			twitter.UserFieldURL,
 			twitter.UserFieldUserName,
 		},
-		Expansions:  []twitter.Expansion{},
-		PlaceFields: []twitter.PlaceField{},
-		PollFields:  []twitter.PollField{},
-		MaxResults:  10,
+		Expansions:      []twitter.Expansion{},
+		PlaceFields:     []twitter.PlaceField{},
+		PollFields:      []twitter.PollField{},
+		MaxResults:      100,
+		PaginationToken: paginationToken,
 	}
 
 	userTweets, err := user.Tweets(context.Background(), v2.TwitterID, tweetOpts)
@@ -69,10 +98,13 @@ func (v2 TwitterV2Client) FetchMyTweets() {
 	switch {
 	case errors.As(err, &tweetErr):
 		printTweetError(tweetErr)
+		return []twitter.TweetObj{}, "", tweetErr
 	case err != nil:
 		fmt.Println(err)
+		return []twitter.TweetObj{}, "", err
 	default:
 		printUserTweets(userTweets)
+		return userTweets.Tweets, userTweets.Meta.NextToken, nil
 	}
 }
 
