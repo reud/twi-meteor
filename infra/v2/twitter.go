@@ -6,8 +6,19 @@ import (
 	"errors"
 	"fmt"
 	"github.com/g8rswimmer/go-twitter"
+	"io/ioutil"
 	"net/http"
 )
+
+type LikeData struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Username string `json:"username"`
+}
+
+type LikingUsersResponse struct {
+	Data []LikeData `json:"data"`
+}
 
 type V2Config struct {
 	BearerToken string
@@ -19,11 +30,17 @@ type TwitterV2Client struct {
 	TwitterID   string
 }
 
-func GenTwitterV2Client(con V2Config) *TwitterV2Client {
+func GenTwitterV2Client(con V2Config) TwitterV2ClientInterface {
 	return &TwitterV2Client{
 		BearerToken: con.BearerToken,
 		TwitterID:   con.TwitterID,
 	}
+}
+
+type TwitterV2ClientInterface interface {
+	TweetLookup(tweetID string) (*twitter.TweetLookup, error)
+	FetchMyTweets(paginationToken string) ([]twitter.TweetObj, string, error)
+	LikingUsers(tweetID string) ([]LikeData, error)
 }
 
 type authorize struct {
@@ -106,6 +123,31 @@ func (v2 TwitterV2Client) FetchMyTweets(paginationToken string) ([]twitter.Tweet
 		printUserTweets(userTweets)
 		return userTweets.Tweets, userTweets.Meta.NextToken, nil
 	}
+}
+
+// LikingUsers はtweetIDにいいねしたユーザの情報を取得する。ライブラリが無いのでスクラッチで書いている
+func (v2 TwitterV2Client) LikingUsers(tweetID string) ([]LikeData, error) {
+	url := fmt.Sprintf("https://api.twitter.com/2/tweets/%s/liking_users", tweetID)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return []LikeData{}, err
+	}
+	req.Header.Set("Authorization", "Bearer "+v2.BearerToken)
+	resp, err := http.Get(url)
+	if err != nil {
+		return []LikeData{}, err
+	}
+	defer resp.Body.Close()
+
+	byteArray, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return []LikeData{}, err
+	}
+	var decoded LikingUsersResponse
+	if err := json.Unmarshal(byteArray, &decoded); err != nil {
+		return []LikeData{}, err
+	}
+	return decoded.Data, nil
 }
 
 func printUserTweets(userTweets *twitter.UserTimeline) {

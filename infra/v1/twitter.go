@@ -14,11 +14,16 @@ type V1Config struct {
 	AccessTokenSecret string
 }
 
+type TwitterV1ClientInterface interface {
+	LookupID() (int64, error)
+	DestroyTweet(tweetID int64) (int64, error)
+}
+
 type TwitterV1Client struct {
 	client *twitter.Client
 }
 
-func GenTwitterV1Client(con V1Config) *TwitterV1Client {
+func GenTwitterV1Client(con V1Config) TwitterV1ClientInterface {
 	config := oauth1.NewConfig(con.ConsumerKey, con.ConsumerSecret)
 	token := oauth1.NewToken(con.AccessToken, con.AccessTokenSecret)
 	httpClient := config.Client(oauth1.NoContext, token)

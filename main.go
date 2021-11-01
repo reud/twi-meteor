@@ -47,7 +47,10 @@ func main() {
 		if !tweetTime.Before(time.Now().Add(-time.Hour * 24)) {
 			continue
 		}
-		likes := http.LikingUsers(tweet.ID, con.BearerToken)
+		likes, err := http.LikingUsers(tweet.ID, con.BearerToken)
+		if err != nil {
+			log.Fatal(err)
+		}
 		found := false
 		for _, user := range likes {
 			if user.ID == strconv.FormatInt(id, 10) {
