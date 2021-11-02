@@ -1,6 +1,7 @@
 module github.com/reud/twi-meteor
 
-go 1.16
+// +heroku goVersion go1.17
+go 1.17
 
 require (
 	github.com/dghubble/go-twitter v0.0.0-20210609183100-2fdbf421508e
