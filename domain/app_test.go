@@ -39,7 +39,7 @@ func timeParse(str string) time.Time {
 }
 
 func TestApplication_CheckDeletableTweet(t *testing.T) {
-	clock := &Clock{}
+	clock := &ClockMock{}
 	type Want struct {
 		isOK bool
 		err  error
