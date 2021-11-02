@@ -1,9 +1,14 @@
 package domain
 
 import (
-	"github.com/reud/twi-meteor/adapter"
 	"time"
 )
+
+type AdapterInterface interface {
+	FetchTweets() ([]Tweet, error)
+	LikingUsers(tweetID string) ([]LikeData, error)
+	DestroyTweet(tweetID string) error
+}
 
 type ApplicationInterface interface {
 	CheckDeletableTweet(tweet Tweet) (isOK bool, err error)
@@ -11,11 +16,11 @@ type ApplicationInterface interface {
 }
 
 type Application struct {
-	Client      adapter.ClientInterface
+	Client      AdapterInterface
 	MyTwitterID string
 }
 
-func GenApplication(client adapter.ClientInterface, myTwitterID string) ApplicationInterface {
+func GenApplication(client AdapterInterface, myTwitterID string) ApplicationInterface {
 	return &Application{
 		Client:      client,
 		MyTwitterID: myTwitterID,

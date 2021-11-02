@@ -1,15 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"github.com/joho/godotenv"
-	"github.com/reud/twi-meteor/client"
+	"github.com/k0kubun/pp"
+	"github.com/reud/twi-meteor/adapter"
+	"github.com/reud/twi-meteor/domain"
 	"github.com/reud/twi-meteor/env"
-	"github.com/reud/twi-meteor/infra/http"
+	"github.com/reud/twi-meteor/infra"
 	v1 "github.com/reud/twi-meteor/infra/v1"
 	v2 "github.com/reud/twi-meteor/infra/v2"
 	"log"
 	"strconv"
-	"time"
 )
 
 func main() {
@@ -28,46 +30,43 @@ func main() {
 	})
 
 	id, err := v1cleint.LookupID()
+	strTwitterId := strconv.FormatInt(id, 10)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	v2client := v2.GenTwitterV2Client(v2.V2Config{
 		BearerToken: con.BearerToken,
-		TwitterID:   strconv.FormatInt(id, 10),
+		TwitterID:   strTwitterId,
 	})
 
-	cl := client.GenClient(v1cleint, v2client)
-	twts, err := cl.FetchTweets()
+	infraCl := infra.GenClient(v1cleint, v2client)
+	adapterCl := adapter.GenAdapterClient(infraCl)
+	tweets, err := adapterCl.FetchTweets()
+
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, tweet := range twts {
-		tweetTime, _ := time.Parse("2006-01-02T15:04:05.000Z", tweet.CreatedAt)
-		if !tweetTime.Before(time.Now().Add(-time.Hour * 24)) {
-			continue
-		}
-		likes, err := http.LikingUsers(tweet.ID, con.BearerToken)
+
+	app := domain.GenApplication(adapterCl, strTwitterId)
+	for _, tweet := range tweets {
+		isOK, err := app.CheckDeletableTweet(tweet)
 		if err != nil {
-			log.Fatal(err)
-		}
-		found := false
-		for _, user := range likes {
-			if user.ID == strconv.FormatInt(id, 10) {
-				log.Printf("saved: %+v", tweet.ID)
-				found = true
-				break
-			}
-		}
-		if !found {
-			tweetID64, err := strconv.ParseInt(tweet.ID, 10, 64)
-			if err != nil {
+			switch err := err.(type) {
+			case *domain.CheckFailedError:
+				_, err2 := pp.Print(*err)
+				if err2 != nil {
+					log.Fatal(err2)
+				}
+			default:
 				log.Fatal(err)
 			}
-			_, err = v1cleint.DestroyTweet(tweetID64)
-			if err != nil {
-				log.Print(err)
-			}
+
+		}
+		fmt.Printf("tweet (deleted: %+v): \n", isOK)
+		_, err = pp.Print(tweet)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
 }

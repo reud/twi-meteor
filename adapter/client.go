@@ -6,14 +6,8 @@ import (
 	"strconv"
 )
 
-type ClientInterface interface {
-	FetchTweets() ([]domain.Tweet, error)
-	LikingUsers(tweetID string) ([]domain.LikeData, error)
-	DestroyTweet(tweetID string) error
-}
-
 // GenAdapterClient infra -> domainへのデータを成形するクライアントを生成する。
-func GenAdapterClient(infraClient infra.ClientInterface) ClientInterface {
+func GenAdapterClient(infraClient infra.ClientInterface) *Client {
 	return &Client{infraClient}
 }
 

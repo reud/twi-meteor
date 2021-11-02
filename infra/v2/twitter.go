@@ -133,9 +133,14 @@ func (v2 TwitterV2Client) LikingUsers(tweetID string) ([]LikeData, error) {
 		return []LikeData{}, err
 	}
 	req.Header.Set("Authorization", "Bearer "+v2.BearerToken)
-	resp, err := http.Get(url)
+	client := new(http.Client)
+	resp, err := client.Do(req)
 	if err != nil {
 		return []LikeData{}, err
+	}
+
+	if resp.StatusCode != 200 {
+		return []LikeData{}, fmt.Errorf("failed to request, code: %+v \n status: %+v", resp.StatusCode, resp.Status)
 	}
 	defer resp.Body.Close()
 

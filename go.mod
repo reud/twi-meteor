@@ -11,4 +11,5 @@ require (
 	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/mattn/go-colorable v0.1.11 // indirect
+	github.com/stretchr/testify v1.7.0 // indirect
 )
