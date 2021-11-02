@@ -4,6 +4,11 @@ import (
 	"time"
 )
 
+// ClockInterface time.Now()のモックにするためのインターフェイス
+type ClockInterface interface {
+	Now() time.Time
+}
+
 type AdapterInterface interface {
 	FetchTweets() ([]Tweet, error)
 	LikingUsers(tweetID string) ([]LikeData, error)
@@ -18,12 +23,20 @@ type ApplicationInterface interface {
 type Application struct {
 	Client      AdapterInterface
 	MyTwitterID string
+	clock       ClockInterface
 }
 
-func GenApplication(client AdapterInterface, myTwitterID string) ApplicationInterface {
+type Clock struct{}
+
+func (c *Clock) Now() time.Time {
+	return time.Now()
+}
+
+func GenApplication(client AdapterInterface, myTwitterID string, clock ClockInterface) ApplicationInterface {
 	return &Application{
 		Client:      client,
 		MyTwitterID: myTwitterID,
+		clock:       clock,
 	}
 }
 
@@ -32,7 +45,7 @@ func GenApplication(client AdapterInterface, myTwitterID string) ApplicationInte
 // err 判定が上手くいかない時や、削除NGの時返す。
 func (app *Application) CheckDeletableTweet(tweet Tweet) (isOK bool, err error) {
 	// 現在時刻より24時間以上前のツイートでない場合は終了
-	if !tweet.CreatedAt.Before(time.Now().Add(-time.Hour * 24)) {
+	if !tweet.CreatedAt.Before(app.clock.Now().Add(-time.Hour * 24)) {
 		return false, &CheckFailedError{
 			Message: "24時間経っていないツイートです",
 		}
