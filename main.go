@@ -48,7 +48,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	app := domain.GenApplication(adapterCl, strTwitterId)
+	app := domain.GenApplication(adapterCl, strTwitterId, &domain.Clock{})
 	for _, tweet := range tweets {
 		isOK, err := app.CheckDeletableTweet(tweet)
 		if err != nil {
