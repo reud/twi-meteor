@@ -1,6 +1,6 @@
 # use a first-stage image to build the go code
 # we'll change it later
-FROM golang:1.16 AS build
+FROM golang:1.17 AS build
 
 RUN mkdir /go-app
 WORKDIR /go-app

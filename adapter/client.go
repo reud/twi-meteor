@@ -18,7 +18,7 @@ type Client struct {
 
 // FetchTweets はinfra層の同メソッドを呼び出し、domain層のモデルに変換して返す
 func (c *Client) FetchTweets() ([]domain.Tweet, error) {
-	time.Sleep(time.Second * 20) // for 429 対策
+	time.Sleep(time.Second) // for 429 対策
 
 	infraResult, err := c.InfraClient.FetchTweets()
 	if err != nil {
@@ -41,7 +41,7 @@ func (c *Client) FetchTweets() ([]domain.Tweet, error) {
 
 // LikingUsers はinfra層の同メソッドを呼び出し、domain層のモデルに変換して返す
 func (c *Client) LikingUsers(tweetID string) ([]domain.LikeData, error) {
-	time.Sleep(time.Second * 15) // for 429 対策
+	time.Sleep(time.Second) // for 429 対策
 	infraLikeData, err := c.InfraClient.LikingUsers(tweetID)
 	if err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func (c *Client) LikingUsers(tweetID string) ([]domain.LikeData, error) {
 
 // DestroyTweet はinfra層の同メソッドを呼び出す
 func (c *Client) DestroyTweet(tweetID string) error {
-	time.Sleep(time.Second * 20) // for 429 対策
+	time.Sleep(time.Second) // for 429 対策
 	tweetID64, err := strconv.ParseInt(tweetID, 10, 64)
 	if err != nil {
 		return err

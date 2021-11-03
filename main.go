@@ -58,14 +58,17 @@ func main() {
 				if err2 != nil {
 					log.Fatal(err2)
 				}
+				continue
 			default:
 				log.Fatal(err)
 			}
-
 		}
 		fmt.Printf("tweet (deleted: %+v): \n", isOK)
-		_, err = pp.Print(tweet)
-		if err != nil {
+		fmt.Print("deleting...")
+		if err = app.DestroyTweet(tweet); err != nil {
+			log.Fatal(err)
+		}
+		if _, err = pp.Print(tweet); err != nil {
 			log.Fatal(err)
 		}
 	}
