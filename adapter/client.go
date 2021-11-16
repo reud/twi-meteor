@@ -28,7 +28,7 @@ func (c *Client) FetchTweets() ([]domain.Tweet, error) {
 	var domainResult []domain.Tweet
 
 	for _, infraTweet := range infraResult {
-		domainTweet, err := ToDomainTweetModel(infraTweet)
+		domainTweet, err := V1ToDomainTweetModel(infraTweet)
 		if err != nil {
 			return nil, err
 		}

@@ -79,6 +79,10 @@ func (v2 TwitterV2Client) TweetLookup(tweetID string) (*twitter.TweetLookup, err
 	}
 }
 
+/*
+	自身のツイートを取得する。
+	しかし、鍵垢の場合には取得出来ない。
+*/
 func (v2 TwitterV2Client) FetchMyTweets(paginationToken string) ([]twitter.TweetObj, string, error) {
 	user := &twitter.User{
 		Authorizer: authorize{

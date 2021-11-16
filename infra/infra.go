@@ -2,13 +2,14 @@ package infra
 
 import (
 	"fmt"
-	"github.com/g8rswimmer/go-twitter"
+	"github.com/dghubble/go-twitter/twitter"
+	v2client "github.com/g8rswimmer/go-twitter"
 	v1 "github.com/reud/twi-meteor/infra/v1"
 	v2 "github.com/reud/twi-meteor/infra/v2"
 )
 
 type ClientInterface interface {
-	FetchTweets() ([]twitter.TweetObj, error)
+	FetchTweets() ([]twitter.Tweet, error)
 	LikingUsers(tweetID string) ([]v2.LikeData, error)
 	DestroyTweet(tweetID int64) (int64, error)
 }
@@ -27,8 +28,32 @@ func GenClient(v1 v1.TwitterV1ClientInterface, v2 v2.TwitterV2ClientInterface) C
 	}
 }
 
-// FetchTweets はtwitterから自身のツイートを取得する。
-func (c *Client) FetchTweets() ([]twitter.TweetObj, error) {
+func (c *Client) FetchTweets() ([]twitter.Tweet, error) {
+	tweets, err := c.v1client.FetchMyTweets(nil)
+	if err != nil {
+		fmt.Printf("%+v", err)
+		return nil, err
+	}
+	result := tweets
+	for i := 0; i < LOOPS; i++ {
+		if len(tweets) == 0 {
+			return result, nil
+		}
+		// 一番後ろのツイートが古いのでそれの1少ない値をmaxIDとする。
+		maxID := tweets[len(tweets)-1].ID - 1
+		tweets, err = c.v1client.FetchMyTweets(&maxID)
+		if err != nil {
+			fmt.Printf("%+v th error occured: %+v", i, err)
+			return nil, err
+		}
+		result = append(result, tweets...)
+	}
+	return result, nil
+}
+
+// FetchTweetsV2 はtwitter API v2 twitterから自身のツイートを取得する。
+// twitter API v2の仕様だと自分のツイートでも鍵垢だとNGになるのでdeprecated
+func (c *Client) FetchTweetsV2() ([]v2client.TweetObj, error) {
 	tweet, next, err := c.v2client.FetchMyTweets("")
 	if err != nil {
 		fmt.Printf("%+v", err)
