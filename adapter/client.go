@@ -8,12 +8,12 @@ import (
 )
 
 // GenAdapterClient infra -> domainへのデータを成形するクライアントを生成する。
-func GenAdapterClient(infraClient infra.ClientInterface) *Client {
+func GenAdapterClient(infraClient infra.TwitterClientInterface) *Client {
 	return &Client{infraClient}
 }
 
 type Client struct {
-	InfraClient infra.ClientInterface
+	InfraClient infra.TwitterClientInterface
 }
 
 // FetchTweets はinfra層の同メソッドを呼び出し、domain層のモデルに変換して返す
