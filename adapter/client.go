@@ -3,7 +3,6 @@ package adapter
 import (
 	"github.com/reud/twi-meteor/domain"
 	"github.com/reud/twi-meteor/infra"
-	"strconv"
 	"time"
 )
 
@@ -20,7 +19,7 @@ type Client struct {
 func (c *Client) FetchTweets() ([]domain.Tweet, error) {
 	time.Sleep(time.Second) // for 429 対策
 
-	infraResult, err := c.InfraClient.FetchTweets()
+	infraResult, err := c.InfraClient.FetchMyTweets()
 	if err != nil {
 		return nil, err
 	}
@@ -28,11 +27,10 @@ func (c *Client) FetchTweets() ([]domain.Tweet, error) {
 	var domainResult []domain.Tweet
 
 	for _, infraTweet := range infraResult {
-		domainTweet, err := V1ToDomainTweetModel(infraTweet)
+		domainTweet, err := ToDomainTweetModel(infraTweet)
 		if err != nil {
 			return nil, err
 		}
-
 		domainResult = append(domainResult, *domainTweet)
 	}
 
@@ -58,11 +56,6 @@ func (c *Client) LikingUsers(tweetID string) ([]domain.LikeData, error) {
 
 // DestroyTweet はinfra層の同メソッドを呼び出す
 func (c *Client) DestroyTweet(tweetID string) error {
-	time.Sleep(time.Second) // for 429 対策
-	tweetID64, err := strconv.ParseInt(tweetID, 10, 64)
-	if err != nil {
-		return err
-	}
-	_, err = c.InfraClient.DestroyTweet(tweetID64)
+	err := c.InfraClient.DestroyTweet(tweetID)
 	return err
 }

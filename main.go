@@ -8,10 +8,8 @@ import (
 	"github.com/reud/twi-meteor/domain"
 	"github.com/reud/twi-meteor/env"
 	"github.com/reud/twi-meteor/infra"
-	v1 "github.com/reud/twi-meteor/infra/v1"
-	v2 "github.com/reud/twi-meteor/infra/v2"
 	"log"
-	"strconv"
+	"os"
 )
 
 func main() {
@@ -21,26 +19,14 @@ func main() {
 	}
 
 	con := env.GetTwitterConfig()
-
-	v1cleint := v1.GenTwitterV1Client(v1.V1Config{
-		ConsumerKey:       con.ConsumerKey,
-		ConsumerSecret:    con.ConsumerSecret,
-		AccessToken:       con.AccessToken,
-		AccessTokenSecret: con.AccessTokenSecret,
-	})
-
-	id, err := v1cleint.LookupID()
-	strTwitterId := strconv.FormatInt(id, 10)
+	os.Setenv("GOTWI_API_KEY", con.ConsumerKey)
+	os.Setenv("GOTWI_API_KEY_SECRET", con.ConsumerSecret)
+	infraCl, err := infra.GenTwitterClient(con.AccessToken, con.AccessTokenSecret, con.TwitterID)
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
 
-	v2client := v2.GenTwitterV2Client(v2.V2Config{
-		BearerToken: con.BearerToken,
-		TwitterID:   strTwitterId,
-	})
-
-	infraCl := infra.GenClient(v1cleint, v2client)
 	adapterCl := adapter.GenAdapterClient(infraCl)
 	tweets, err := adapterCl.FetchTweets()
 
@@ -48,7 +34,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	app := domain.GenApplication(adapterCl, strTwitterId, &domain.Clock{})
+	app := domain.GenApplication(adapterCl, con.TwitterID, &domain.Clock{})
 	for _, tweet := range tweets {
 		isOK, err := app.CheckDeletableTweet(tweet)
 		if err != nil {

@@ -21,14 +21,14 @@ func Setup(t *testing.T) env.TwitterConfig {
 	return evv
 }
 
-func TestTwitterClient_FetchMyTweets(t *testing.T) {
+func TestTwitterClient_FetchMyTweetsOnce(t *testing.T) {
 	config := Setup(t)
 	client, err := GenTwitterClient(config.AccessToken, config.AccessTokenSecret, config.TwitterID)
 	if err != nil {
 		assert.Nil(t, err)
 	}
 
-	tweets, err := client.FetchMyTweets("")
+	tweets, _, err := client.FetchMyTweetsOnce("")
 	assert.Nil(t, err)
 	_, err = pp.Print(tweets)
 	assert.Nil(t, err)
@@ -44,5 +44,15 @@ func TestTwitterClient_LikingUsers(t *testing.T) {
 	users, err := client.LikingUsers("1464805692355735557")
 	assert.Nil(t, err)
 	_, err = pp.Print(users)
+	assert.Nil(t, err)
+}
+
+func TestTwitterClient_FetchMyTweets(t *testing.T) {
+	config := Setup(t)
+	client, err := GenTwitterClient(config.AccessToken, config.AccessTokenSecret, config.TwitterID)
+	assert.Nil(t, err)
+	tweets, err := client.FetchMyTweets()
+	assert.Nil(t, err)
+	_, err = pp.Print(tweets)
 	assert.Nil(t, err)
 }
