@@ -9,9 +9,19 @@ twi-meteorは[Heroku](https://jp.heroku.com/)を利用してworker dynoとして
 worker dynoに対して、[Heroku Scheduler](https://devcenter.heroku.com/articles/scheduler)などを利用して定期的に実行してあげることで、
 24時間以上経過したツイートの定期的な削除を可能にします。
 
+oauth1.0aでの接続となるため以下の情報を必要とします。
+
+```
+CONSUMER_KEY
+CONSUMER_SECRET
+ACCESS_TOKEN
+ACCESS_TOKEN_SECRET
+TWITTER_ID
+```
+
 ## Herokuへのデプロイ方法
 
-TODO: Heroku Buttonを利用してデプロイできる様にする
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 ## 手元での実行 (Docker)
 

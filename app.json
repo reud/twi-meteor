@@ -1,0 +1,32 @@
+{
+  "name": "twi-meteor",
+  "description": "24時間以上経過したツイートを削除するツール",
+  "repository": "https://github.com/reud/twi-meteor",
+  "keywords": [
+    "go",
+    "docker",
+    "twitter"
+  ],
+  "env": {
+    "CONSUMER_KEY": {
+      "description": "Twitter API Consumer Key",
+      "value": ""
+    },
+    "CONSUMER_SECRET": {
+      "description": "Twitter API Consumer Secret",
+      "value": ""
+    },
+    "ACCESS_TOKEN": {
+      "description": "Twitter API Access Token",
+      "value": ""
+    },
+    "ACCESS_TOKEN_SECRET": {
+      "description": "Twitter API Access Token Secret",
+      "value": ""
+    },
+    "TWITTER_ID": {
+      "description": "your_twitter_id(numeric)",
+      "value": ""
+    }
+  }
+}
