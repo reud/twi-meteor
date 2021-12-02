@@ -9,7 +9,6 @@ import (
 	"github.com/reud/twi-meteor/env"
 	"github.com/reud/twi-meteor/infra"
 	"log"
-	"os"
 )
 
 func main() {
@@ -19,9 +18,8 @@ func main() {
 	}
 
 	con := env.GetTwitterConfig()
-	os.Setenv("GOTWI_API_KEY", con.ConsumerKey)
-	os.Setenv("GOTWI_API_KEY_SECRET", con.ConsumerSecret)
-	infraCl, err := infra.GenTwitterClient(con.AccessToken, con.AccessTokenSecret, con.TwitterID)
+
+	infraCl, err := infra.GenTwitterClient(con.AccessToken, con.AccessTokenSecret, con.ConsumerKey, con.ConsumerSecret, con.TwitterID)
 	if err != nil {
 		log.Fatal(err)
 		return

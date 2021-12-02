@@ -9,6 +9,7 @@ import (
 	"github.com/michimani/gotwi/resources"
 	"github.com/michimani/gotwi/tweets"
 	"github.com/michimani/gotwi/tweets/types"
+	"os"
 	"strings"
 )
 
@@ -29,7 +30,9 @@ type TwitterClient struct {
 	twitterID string
 }
 
-func GenTwitterClient(at string, ats string, twitterID string) (TwitterClientInterface, error) {
+func GenTwitterClient(at, ats, ck, cs, twitterID string) (TwitterClientInterface, error) {
+	os.Setenv("GOTWI_API_KEY", ck)
+	os.Setenv("GOTWI_API_KEY_SECRET", cs)
 	in := &gotwi.NewGotwiClientInput{
 		AuthenticationMethod: gotwi.AuthenMethodOAuth1UserContext,
 		OAuthToken:           at,

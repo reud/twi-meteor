@@ -15,7 +15,6 @@ func Setup(t *testing.T) env.TwitterConfig {
 		log.Printf("failed to load .env")
 	}
 	evv := env.GetTwitterConfig()
-	// TODO: この処理をメインでもやりたい。 os.Setenvで出来るはず
 	t.Setenv("GOTWI_API_KEY", evv.ConsumerKey)
 	t.Setenv("GOTWI_API_KEY_SECRET", evv.ConsumerSecret)
 	return evv
@@ -23,7 +22,7 @@ func Setup(t *testing.T) env.TwitterConfig {
 
 func TestTwitterClient_FetchMyTweetsOnce(t *testing.T) {
 	config := Setup(t)
-	client, err := GenTwitterClient(config.AccessToken, config.AccessTokenSecret, config.TwitterID)
+	client, err := GenTwitterClient(config.AccessToken, config.AccessTokenSecret, config.ConsumerKey, config.ConsumerSecret, config.TwitterID)
 	if err != nil {
 		assert.Nil(t, err)
 	}
@@ -36,7 +35,8 @@ func TestTwitterClient_FetchMyTweetsOnce(t *testing.T) {
 
 func TestTwitterClient_LikingUsers(t *testing.T) {
 	config := Setup(t)
-	client, err := GenTwitterClient(config.AccessToken, config.AccessTokenSecret, config.TwitterID)
+	client, err := GenTwitterClient(config.AccessToken, config.AccessTokenSecret, config.ConsumerKey, config.ConsumerSecret, config.TwitterID)
+
 	if err != nil {
 		assert.Nil(t, err)
 	}
@@ -49,7 +49,8 @@ func TestTwitterClient_LikingUsers(t *testing.T) {
 
 func TestTwitterClient_FetchMyTweets(t *testing.T) {
 	config := Setup(t)
-	client, err := GenTwitterClient(config.AccessToken, config.AccessTokenSecret, config.TwitterID)
+	client, err := GenTwitterClient(config.AccessToken, config.AccessTokenSecret, config.ConsumerKey, config.ConsumerSecret, config.TwitterID)
+
 	assert.Nil(t, err)
 	tweets, err := client.FetchMyTweets()
 	assert.Nil(t, err)
