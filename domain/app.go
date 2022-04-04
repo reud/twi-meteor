@@ -61,6 +61,14 @@ func (app *Application) CheckDeletableTweet(tweet Tweet) (isOK bool, err error) 
 			return false, &CheckFailedError{Message: "あなたがいいねしたツイートです"}
 		}
 	}
+
+	// 誰かからリプライがきている時にスキップ
+	for _, t := range tweet.ReferencedTweet {
+		if t.Type == "replied_to" {
+			return false, &CheckFailedError{Message: "リプライが来ています。"}
+		}
+	}
+
 	return true, nil
 }
 

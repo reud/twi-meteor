@@ -47,6 +47,7 @@ func main() {
 				log.Fatal(err)
 			}
 		}
+
 		fmt.Printf("tweet (deleted: %+v): \n", isOK)
 		fmt.Print("deleting...")
 		if err = app.DestroyTweet(tweet); err != nil {

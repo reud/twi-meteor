@@ -77,7 +77,7 @@ func (tc TwitterClient) FetchMyTweetsOnce(paginationToken string) ([]resources.T
 	p := &types.TweetTimelinesTweetsParams{
 		ID:              tc.twitterID,
 		PaginationToken: paginationToken,
-		TweetFields:     fields.TweetFieldList{fields.TweetFieldCreatedAt},
+		TweetFields:     fields.TweetFieldList{fields.TweetFieldCreatedAt, fields.TweetFieldReferencedTweets},
 		MaxResults:      100,
 	}
 	res, err := tweets.TweetTimelinesTweets(context.Background(), tc.client, p)
