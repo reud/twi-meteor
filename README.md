@@ -23,6 +23,21 @@ TWITTER_ID
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
+## Ex. Heroku Schedulerへの登録
+
+このツールをHeroku上で動作させる場合、定期実行の手段としてHeroku Schedulerの設定を推奨します。
+
+下記のリンクにアクセスして、`Install Heroku Scheduler` を選択し、インストールします。
+
+[Heroku Scheduler - Add-ons - Heroku Elements](https://elements.heroku.com/addons/scheduler)
+
+インストール後、twi-meteorのアプリケーションからJobの追加を行い、設定をします。
+
+スケジュールはAPIの制限のこともあるので毎日程度がおすすめです。 Run Commandは画像の通り、`bin/twi-meteor`と設定してください。
+
+![スケジューラの設定](https://user-images.githubusercontent.com/31179220/162594618-ad4b56fc-4441-4d86-bfa8-d6e434696332.png)
+
+
 ## 手元での実行 (Docker)
 
 ローカルでDockerを利用して実行する際の手順です。
