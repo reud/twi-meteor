@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"strings"
 	"time"
 )
 
@@ -49,6 +50,11 @@ func (app *Application) CheckDeletableTweet(tweet Tweet) (isOK bool, err error) 
 		return false, &CheckFailedError{
 			Message: "24時間経っていないツイートです",
 		}
+	}
+
+	// これは誰かへのリプライのためスキップ(暫定的)
+	if strings.Contains(tweet.Text, "@") {
+		return false, &CheckFailedError{Message: "誰かへのリプライです。"}
 	}
 
 	likeData, err := app.Client.LikingUsers(tweet.ID)
